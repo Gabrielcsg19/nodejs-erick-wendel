@@ -1,0 +1,83 @@
+Listando banco de dados
+
+show dbs
+
+-------------------
+
+Selecionando um banco de dados
+
+use NOME_DO_BANCO
+
+-------------------
+
+Listando collections
+
+show collections
+
+-------------------
+
+Inserindo registros dentro da collection
+
+db.NOME_DA_COLLECTION.insert(
+    nome: Gabriel,
+    sobrenome: Souza
+)
+
+-------------------
+
+Atualizando registros dentro da collection
+
+db.NOME_DA_COLLECTION.update({nome: 'Gabriel'}, { $set: {nome: 'João'}})
+
+*O primeiro registro que tenha o nome 'Gabriel' terá o campo "nome" alterado para 'João'. Caso não exista o campo "nome", será criado um novo campo com o valor 'João'
+
+db.NOME_DA_COLLECTION.update({nome: 'Gabriel'}, {nome: 'João'})
+
+*O primeiro registro que tenha o nome 'Gabriel' terá apenas um campo chamado "nome" com o valor 'João'. Ou seja, sem o $set, os campos são substituídos pelo o que foi passado
+
+-------------------
+
+Removendo registros da collection
+
+db.herois.remove({})
+
+*Remove todos os registros da collection
+
+db.herois.remove({nome:'Gabriel'})
+
+*Remove todos os registros com o nome 'Gabriel'
+
+-------------------
+
+Listando registros da collection
+
+db.NOME_DA_COLLECTION.find()
+
+-------------------
+
+Retornando o número de registros da collection
+
+db.NOME_DA_COLLECTION.count()
+
+-------------------
+
+Retornando os registros e filtrando os resultados
+
+db.NOME_DA_COLLECTION.find({}, {nome: 1}))
+
+*Retornará apenas o campo "nome" dos registros
+
+db.NOME_DA_COLLECTION.find({nome: 'Gabriel'})
+
+*Retornará apenas os registros em que o nome seja 'Gabriel'
+
+-------------------
+
+Limitando o número de registros Retornando
+
+db.NOME_DA_COLLECTION.find().limit(100)
+
+*Retornará no máximo 100 registros
+
+-------------------
+

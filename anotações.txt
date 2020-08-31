@@ -1,0 +1,47 @@
+O que não é NodeJS:
+
+*Uma linguagem de programação;
+*Uma ferramenta apenas para criar sites simples;
+*Um framework Javascript;
+
+-----------------------------
+
+O que é NodeJS:
+
+*Uma plataforma para construção de aplicações backend usando Javascript;
+
+-----------------------------
+
+Ciclo de vida do Javascript
+
+*Funcções que dependem de execução externa serão executadas em background;
+*A forma com que seu código é escrito é diferente da ordem em que é executado;
+*Sempre manter a ordem de sua execução para evitar problemas;
+
+-----------------------------
+
+Ciclo de vida de Promises
+
+*Pending: Estado inicial, ainda não terminou ou ainda não foi rejeitado;
+*Fulfilled: Quando executou todas as operações com sucesso;
+*Rejected: Quando a operação falhou.
+
+-----------------------------
+
+Promises - Async/Await
+
+*Facilita a visualização do fluxo de funções
+*Não altera a performance de sua aplicação (desde que seja usada nos momentos corretos)
+*Veio da equipe do C#
+*Usar apenas quando necessitar tratar a resposta da chamada
+
+-----------------------------
+
+EventEmitter
+
+*Usado para ações contínuas
+*Node.js usa para quase tudo em seu ecossistema
+*Bastante usado também nos browsers (.onclick)
+*Trabalha sob o Design Pattern Observer/PubSub
+
+-----------------------------
