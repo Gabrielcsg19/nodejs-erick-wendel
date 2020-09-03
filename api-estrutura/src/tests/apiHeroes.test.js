@@ -80,9 +80,11 @@ describe.only('Suite de testes da API Heroes', function () {
         })
 
         const statusCode = result.statusCode
-        const {message} = JSON.parse(result.payload)
+
+        const {message, _id} = JSON.parse(result.payload)
 
         assert.ok(statusCode === 200)
+        assert.notStrictEqual(_id, undefined)
         assert.deepEqual(message, "Heroi cadastrado com sucesso!")
     })
 })
