@@ -3,11 +3,14 @@ const Context = require('./db/strategies/base/contextStrategy')
 const MongoDB = require('./db/strategies/mongodb/mongodb')
 const HeroiSchema = require('./db/strategies/mongodb/schemas/heroisSchema')
 const HeroRoute = require('./routes/heroRoutes')
+const AuthRoute = require('./routes/authRoutes')
 
 const MapSwagger = require('hapi-swagger')
 const Vision = require('@hapi/vision')
 const Inert = require('@hapi/inert')
 
+const HapiJwt = require('hapi-auth-jwt2')
+const JWT_SECRET = 'MY_SECRET_123'
 const Joi = require('@hapi/joi');
 const app = new Hapi.Server({
     port: 5000
@@ -30,6 +33,7 @@ async function main() {
     }
 
     await app.register([
+        HapiJwt,
         Vision,
         Inert,
         {
@@ -37,11 +41,26 @@ async function main() {
             options: swaggerOptions
         }
     ])
+    app.auth.strategy('jwt', 'jwt', {
+        key: JWT_SECRET,
+        // options: {
+        //     expiresIn: 20
+        // },
+        validate: (dado, request) => {
+
+            return {
+                isValid: true
+            }
+        }
+    })
+
+    app.auth.default('jwt')
 
     app.validator(Joi)
-    app.route(
-        mapRoutes(new HeroRoute(mongodb), HeroRoute.methods())
-    )
+    app.route([
+        ...mapRoutes(new HeroRoute(mongodb), HeroRoute.methods()),
+        ...mapRoutes(new AuthRoute(JWT_SECRET), AuthRoute.methods())
+    ])
 
     await app.start()
     console.log('Servidor rodando na porta', app.info.port)
