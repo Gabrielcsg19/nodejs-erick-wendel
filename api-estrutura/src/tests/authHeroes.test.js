@@ -49,11 +49,10 @@ describe('Auth test suite', function () {
         })
         const statusCode = result.statusCode
 
-        const dados = JSON.parse(statusCode, 401)
-        
-        console.log('dados', dados)
+        const dados = JSON.parse(result.payload)
+
 
         assert.deepEqual(statusCode, 401)
-        assert.deepEqual(result.error, "Unauthorized")
+        assert.deepEqual(dados.error, "Unauthorized")
     })
 })
