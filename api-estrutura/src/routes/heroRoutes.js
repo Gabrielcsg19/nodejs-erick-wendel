@@ -1,5 +1,6 @@
 const BaseRoute = require('./base/baseRoute')
-const Joi = require('joi');
+const Joi = require('@hapi/joi')
+const Boom = require('@hapi/boom')
 const failAction = (request, headers, error) => {
     throw error;
 }
@@ -13,6 +14,9 @@ class HeroRoutes extends BaseRoute{
             path: '/herois',
             method: 'GET',
             config: {
+                tags: ['api'],
+                description: 'Deve listar herois',
+                notes: 'pode paginar resultados e filtrar por nome',
                 validate: {
                     failAction,
                     query: {
@@ -25,7 +29,6 @@ class HeroRoutes extends BaseRoute{
             handler: (request, headers) => {
                 try {
                     const {skip, limit, nome} = request.query
-
                     const query = {
                         nome: {$regex: `.*${nome}*.`}
                     }
@@ -33,7 +36,7 @@ class HeroRoutes extends BaseRoute{
                     return this.db.read(nome ? query : {}, skip, limit)
                 } catch(error) {
                     console.log('ERRO', error)
-                    return 'Erro interno no servidor'
+                    return Boom.internal()
                 }
             }
         }
@@ -43,6 +46,9 @@ class HeroRoutes extends BaseRoute{
             path: '/herois',
             method: 'POST',
             config: {
+                tags: ['api'],
+                description: 'Deve cadastrar herois',
+                notes: 'deve cadastrar heroi por nome e poder',
                 validate: {
                     failAction,
                     payload: {
@@ -65,7 +71,80 @@ class HeroRoutes extends BaseRoute{
 
                 } catch(error) {
                     console.log('DEU RUIM', error)
-                    return 'Erro interno no servidor'
+                    return Boom.internal()
+                }
+            }
+        }
+    }
+    update() {
+        return {
+            path: '/herois/{id}',
+            method: 'PATCH',
+            config: {
+                tags: ['api'],
+                description: 'Deve atualizar heroi por id',
+                notes: 'poder atualizar qualquer campo',
+                validate: {
+                    params: {
+                        id: Joi.string().required()
+                    },
+                    payload: {
+                        nome: Joi.string().min(3).max(100),
+                        poder: Joi.string().min(2).max(100)
+                    }
+                }
+            },
+            handler: async (request) => {
+                try {
+                    const {id} = request.params;
+
+                    const {payload} = request
+
+                    const dadosString = JSON.stringify(payload)
+                    const dados = JSON.parse(dadosString)
+
+                    const result = await this.db.update(id, dados)
+
+                    if(result.nModified !== 1) return Boom.preconditionFailed('Não encontrado no banco!')
+                    return {
+                        message: 'Heroi atualizado com sucesso!'
+                    }
+
+                } catch (error) {
+                    console.log('DEU RUIM', error)
+                    return Boom.internal()
+                }
+            }
+        }
+    }
+    delete() {
+        return {
+            path: '/herois/{id}',
+            method: 'DELETE',
+            config: {
+                tags: ['api'],
+                description: 'Deve demover heroi por id',
+                notes: 'O id tem que ser válido',
+                validate: {
+                    failAction,
+                    params: {
+                        id: Joi.string().required()
+                    }
+                }
+            },
+            handler: async (request) => {
+                try {
+                    const {id} = request.params
+                    const result = await this.db.delete(id)
+                    if (result.n !== 1) {
+                        return Boom.preconditionFailed('Id não encontrado no banco!')
+                    }
+                    return {
+                        message: 'Heroi removido com sucesso!'
+                    }
+                } catch (error) {
+                    console.log('DEU RUIM', error)
+                    return Boom.internal()
                 }
             }
         }
