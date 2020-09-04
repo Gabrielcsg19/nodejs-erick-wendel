@@ -5,6 +5,9 @@ const HeroiSchema = require('./db/strategies/mongodb/schemas/heroisSchema')
 const HeroRoute = require('./routes/heroRoutes')
 const AuthRoute = require('./routes/authRoutes')
 
+const Postgres = require('./db/strategies/postgres/postgres')
+const UsuarioSchema = require('./db/strategies/postgres/schemas/usuarioSchema')
+
 const MapSwagger = require('hapi-swagger')
 const Vision = require('@hapi/vision')
 const Inert = require('@hapi/inert')
@@ -12,6 +15,7 @@ const Inert = require('@hapi/inert')
 const HapiJwt = require('hapi-auth-jwt2')
 const JWT_SECRET = 'MY_SECRET_123'
 const Joi = require('@hapi/joi');
+const { Model } = require('mongoose');
 const app = new Hapi.Server({
     port: 5000
 })
@@ -24,6 +28,10 @@ function mapRoutes(instance, methods) {
 async function main() {
     const connection = MongoDB.connect()
     const mongodb = new Context(new MongoDB(connection, HeroiSchema))
+
+    const connectionPostgres = await Postgres.connect()
+    const usuarioSchema = await Postgres.defineModel(connectionPostgres, UsuarioSchema)
+    const contextPostgres = new Context(new Postgres(connectionPostgres, usuarioSchema))
 
     const swaggerOptions = {
         info: {
@@ -59,7 +67,7 @@ async function main() {
     app.validator(Joi)
     app.route([
         ...mapRoutes(new HeroRoute(mongodb), HeroRoute.methods()),
-        ...mapRoutes(new AuthRoute(JWT_SECRET), AuthRoute.methods())
+        ...mapRoutes(new AuthRoute(JWT_SECRET, contextPostgres), AuthRoute.methods())
     ])
 
     await app.start()
