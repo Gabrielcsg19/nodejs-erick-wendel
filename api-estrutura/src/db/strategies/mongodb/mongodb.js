@@ -27,7 +27,7 @@ class MongoDB extends ICrud {
         return STATUS[this._connection.readyState]
     }
     static connect() {
-        Mongoose.connect('mongodb://127.0.0.1:27017/herois', {useNewUrlParser: true, useUnifiedTopology: true}, function(error) {
+        Mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true}, function(error) {
             if(!error) {    
                 return;
             }

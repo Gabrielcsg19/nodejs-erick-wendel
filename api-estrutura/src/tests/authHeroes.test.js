@@ -31,7 +31,6 @@ describe('Auth test suite', function () {
             url: '/login',
             payload: USER
         })
-        console.log('result', result.payload)
         const statusCode = result.statusCode
         const dados = JSON.parse(result.payload)
 
